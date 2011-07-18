@@ -68,7 +68,7 @@ function imgimport_update_image_by_nid($nid, $sku, $bundle) {
   if (isset($nid) && isset($sku)) {
     $node = node_load($nid);
 	
-	dsm($node);
+	//dsm($node);
   }
 }
 
@@ -80,7 +80,8 @@ function imgimport_copy_image($bundle, $sku) {
   $file = NULL;
   if (isset($bundle) && isset($sku)) {   
 	
-	$file_path = drupal_realpath('sites/default/files/_temp_images_to_import_by_val.'.$sku.'jpg');
+	$file_path = drupal_realpath('sites/default/files/_temp_images_to_import_by_val/'.$sku.'.jpg');
+
 	if ($file_path != NULL) {
 	
 	  $file = (object)array(
@@ -89,7 +90,8 @@ function imgimport_copy_image($bundle, $sku) {
         'filename' => basename($file_path),
         'filemime' => file_get_mimetype($file_path),
       );
-	  //$file = file_copy($file, 'public://images');
+	  
+	  $file = file_copy($file, 'public://product_img/'.$bundle);
 	}
   }
   return $file;
