@@ -1,0 +1,9 @@
+;$Id$
+name = "Image importer"
+description = "Image imnport from old site"
+package = "KTC"
+core = 7.x
+version = "7.x-1.0-1"
+php = 5.x
+
+files[] = "imgimport.module"
