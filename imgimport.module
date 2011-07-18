@@ -21,7 +21,7 @@ function imgimport_menu() {
 
 
 /**
-* batch operations initialization
+* menu item handler
 *
 */
 function imgimport_import() {
@@ -31,6 +31,50 @@ function imgimport_import() {
   //imgimport_copy_image('notebook', '35814');
   //dsm($list);
   return "11111";
+}
+
+/**
+* batch process initialization
+*
+*/
+function imgimport_batch_init() {
+  $batch = array(
+    'title'=>t('Image import'),
+	'operations' => array(
+	  array('imgimport_img_process', array($bundles)),
+	),
+	'finished' => 'imgimport_batch_finished',
+  );
+  batch_set($batch);
+  batch_process();
+}
+
+/**
+* Batch processing function
+*
+*/
+function imgimport_img_process($bundles, &$context) {
+ //On start initialization 
+ if (empty($context['sandbox'])) {
+    $context['sandbox']['progress'] = 0;
+	$context['sandbox']['current_node'] = 0;
+	//$context['sandbox']['max'] = ????
+  }
+  
+  
+  
+  //End of import checking
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+  }
+}
+
+/**
+* Batch end function
+*
+*/
+function imgimport_batch_finished($success, $results, $operations) {
+  drupal_set_message("Import process finished");
 }
 
 /**
