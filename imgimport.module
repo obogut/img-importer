@@ -57,9 +57,13 @@ function imgimport_img_process($bundles, &$context) {
  //On start initialization 
  if (empty($context['sandbox'])) {
     $context['sandbox']['progress'] = 0;
-	$context['sandbox']['current_node'] = 0;
+	$context['sandbox']['current_bundle_count'] = 0;
+	
+	
+	
 	//$context['sandbox']['max'] = ????
   }
+  
   
   
   
@@ -115,8 +119,11 @@ function imgimport_update_image_by_nid($nid, $sku, $bundle) {
     $file = imgimport_copy_image($bundle, $sku);
 	if ($file != NULL) {
 	      $node = node_load($nid);
-		  $node->field_product_image['uk']['0'] = (array)$file;
-		  node_save($node);
+		  if (sizeof($node->field_product_image) == 0) {
+		    $node->field_product_image['uk']['0'] = (array)$file;
+		    node_save($node);
+			dsm($node);
+		  }
 	}	
   }
 }
