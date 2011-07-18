@@ -26,7 +26,9 @@ function imgimport_menu() {
 */
 function imgimport_import() {
   $bundles = imgimport_get_bundles();
-  dsm($bundles);
+  $list = imgimport_get_node_list('notebook');
+  dsm($list);
+  return "11111";
 }
 
 /**
@@ -37,3 +39,21 @@ function imgimport_get_bundles() {
   $bundles = db_query("SELECT pr.bundle FROM {field_data_field_product_relation} pr GROUP BY pr.bundle")->fetchAll();
   return $bundles;
 }
+
+/**
+* Gen node list by bundle
+*
+*/
+function imgimport_get_node_list($bundle = NULL) {
+  if ($bundle != NULL) {
+    $nodes = db_query("
+	SELECT n.nid, cp.sku
+	FROM {commerce_product} cp, {node} n 
+	INNER JOIN {field_data_field_edit_status_relation} ed ON (ed.entity_id = n.nid AND ed.field_edit_status_relation_tid = '104')
+	INNER JOIN {field_data_field_product_relation} pr ON (pr.entity_id = n.nid)
+	WHERE n.type = :bund AND cp.product_id = pr.field_product_relation_product_id
+	", array(':bund'=>$bundle))->fetchAll();
+  }
+  return $nodes;
+}
+
