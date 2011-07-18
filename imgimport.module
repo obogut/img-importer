@@ -1,0 +1,39 @@
+<?php
+//$Id$
+
+/**
+* hook_menu() implementation
+*
+*/
+function imgimport_menu() {
+  $items = array();
+  $items['imgimport']=array(
+    'title' => t('Image import'),
+    'description' => t(''),
+    'page callback'=>'imgimport_import',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'weight' => 0,
+    'type' => MENU_NORMAL_ITEM
+  );
+  return $items;
+}
+
+
+/**
+* batch operations initialization
+*
+*/
+function imgimport_import() {
+  $bundles = imgimport_get_bundles();
+  dsm($bundles);
+}
+
+/**
+*  Get bundles list for products
+*
+*/
+function imgimport_get_bundles() {
+  $bundles = db_query("SELECT pr.bundle FROM {field_data_field_product_relation} pr GROUP BY pr.bundle")->fetchAll();
+  return $bundles;
+}
