@@ -27,7 +27,9 @@ function imgimport_menu() {
 function imgimport_import() {
   $bundles = imgimport_get_bundles();
   $list = imgimport_get_node_list('notebook');
-  dsm($list);
+  imgimport_update_image_by_nid(3813, 35814, 'notebook');
+  imgimport_copy_image('notebook', '35814');
+  //dsm($list);
   return "11111";
 }
 
@@ -57,3 +59,38 @@ function imgimport_get_node_list($bundle = NULL) {
   return $nodes;
 }
 
+/**
+* Image insert by nid and sku
+*
+*
+*/
+function imgimport_update_image_by_nid($nid, $sku, $bundle) {
+  if (isset($nid) && isset($sku)) {
+    $node = node_load($nid);
+	
+	dsm($node);
+  }
+}
+
+/**
+* Copy image from temporary directory to destination directory
+*
+*/
+function imgimport_copy_image($bundle, $sku) {
+  $file = NULL;
+  if (isset($bundle) && isset($sku)) {   
+	
+	$file_path = drupal_realpath('sites/default/files/_temp_images_to_import_by_val.'.$sku.'jpg');
+	if ($file_path != NULL) {
+	
+	  $file = (object)array(
+        'uid' => 1,
+        'uri' => $file_path,
+        'filename' => basename($file_path),
+        'filemime' => file_get_mimetype($file_path),
+      );
+	  //$file = file_copy($file, 'public://images');
+	}
+  }
+  return $file;
+}
