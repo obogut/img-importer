@@ -28,7 +28,7 @@ function imgimport_import() {
   $bundles = imgimport_get_bundles();
   $list = imgimport_get_node_list('notebook');
   imgimport_update_image_by_nid(3813, 35814, 'notebook');
-  imgimport_copy_image('notebook', '35814');
+  //imgimport_copy_image('notebook', '35814');
   //dsm($list);
   return "11111";
 }
@@ -65,10 +65,15 @@ function imgimport_get_node_list($bundle = NULL) {
 *
 */
 function imgimport_update_image_by_nid($nid, $sku, $bundle) {
-  if (isset($nid) && isset($sku)) {
-    $node = node_load($nid);
-	
-	//dsm($node);
+  if (isset($nid) && isset($sku) && isset($bundle)) {
+    
+	//copy img file to destination directory
+    $file = imgimport_copy_image($bundle, $sku);
+	if ($file != NULL) {
+	      $node = node_load($nid);
+		  $node->field_product_image['uk']['0'] = (array)$file;
+		  node_save($node);
+	}	
   }
 }
 
