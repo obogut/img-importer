@@ -56,12 +56,17 @@ function imgimport_img_process($bundles, &$context) {
     $context['sandbox']['progress'] = 0;
 	$context['sandbox']['current_bundle_count'] = 0;
 	$context['sandbox']['max'] = sizeof($bundles);
-	dsm($bundles);
+	variable_set('imgimport_log', array());
   }
   
   $list = imgimport_get_node_list($bundles[$context['sandbox']['current_bundle_count']]->bundle);
   foreach ($list as $pos) {
-    imgimport_update_image_by_nid($pos->nid, $pos->sku, $bundles[$context['sandbox']['current_bundle_count']]->bundle);
+    $impf = imgimport_update_image_by_nid($pos->nid, $pos->sku, $bundles[$context['sandbox']['current_bundle_count']]->bundle);
+	if ($impf == TRUE) {
+	  $log = variable_get('imgimport_log', array());
+	  $log[] = $pos->nid;
+	  variable_set('imgimport_log', $log);	  
+	}
   }
   
   $context['sandbox']['current_bundle_count']++;
@@ -78,7 +83,18 @@ function imgimport_img_process($bundles, &$context) {
 *
 */
 function imgimport_batch_finished($success, $results, $operations) {
-  drupal_set_message("Import process finished");
+  $log = variable_get('imgimport_log', array());
+  $text = '';
+  if (sizeof($log) > 0) {
+    $text .= '<p>Перелік оновлених нод:</p>';
+    foreach ($log as $lg) {
+	  $text .= '<p>'.$lg.'</p>';
+	}
+  }	else {
+    $text .= '<p>Жодної ноди не було оновлено.</p>';
+  }
+
+  drupal_set_message($text);
 }
 
 /**
@@ -122,9 +138,11 @@ function imgimport_update_image_by_nid($nid, $sku, $bundle) {
 		  if (sizeof($node->field_product_image) == 0) {
 		    $node->field_product_image['uk']['0'] = (array)$file;
 		    node_save($node);
+			return TRUE;
 		  }
 	}	
   }
+  return FALSE;
 }
 
 /**
