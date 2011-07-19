@@ -26,18 +26,15 @@ function imgimport_menu() {
 */
 function imgimport_import() {
   $bundles = imgimport_get_bundles();
-  $list = imgimport_get_node_list('notebook');
-  imgimport_update_image_by_nid(3813, 35814, 'notebook');
-  //imgimport_copy_image('notebook', '35814');
-  //dsm($list);
-  return "11111";
+  imgimport_batch_init($bundles);
+  return "Completed";
 }
 
 /**
 * batch process initialization
 *
 */
-function imgimport_batch_init() {
+function imgimport_batch_init($bundles) {
   $batch = array(
     'title'=>t('Image import'),
 	'operations' => array(
@@ -46,7 +43,7 @@ function imgimport_batch_init() {
 	'finished' => 'imgimport_batch_finished',
   );
   batch_set($batch);
-  batch_process();
+  batch_process('/');
 }
 
 /**
@@ -58,11 +55,17 @@ function imgimport_img_process($bundles, &$context) {
  if (empty($context['sandbox'])) {
     $context['sandbox']['progress'] = 0;
 	$context['sandbox']['current_bundle_count'] = 0;
-	$context['sandbox']['max'] = sizeof($bundles - 1);
+	$context['sandbox']['max'] = sizeof($bundles);
+	dsm($bundles);
   }
   
+  $list = imgimport_get_node_list($bundles[$context['sandbox']['current_bundle_count']]->bundle);
+  foreach ($list as $pos) {
+    imgimport_update_image_by_nid($pos->nid, $pos->sku, $bundles[$context['sandbox']['current_bundle_count']]->bundle);
+  }
   
-  
+  $context['sandbox']['current_bundle_count']++;
+  $context['sandbox']['progress']++;
   
   //End of import checking
   if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
